@@ -1,0 +1,80 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String    @id @default(cuid()) // Unique ID
+  email       String    @unique
+  name        String?
+  image       String?   // Optional profile picture
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  favorites   Favorite[] // Relation to Favorite
+}
+
+model Favorite {
+  id        Int      @id @default(autoincrement())
+  userId    String   
+  teamId    Int      
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  team      Team     @relation(fields: [teamId], references: [id])
+}
+
+model Team {
+  id          Int       @id // API Team ID
+  name        String
+  code        String?   // Short code (e.g., "MUN")
+  country     String
+  founded     Int?
+  logoUrl     String
+  leagueId    Int       // Foreign key to League
+  venue       Venue?    @relation(fields: [venueId], references: [id])
+  venueId     Int?
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  league      League    @relation(fields: [leagueId], references: [id])
+  favorites   Favorite[]
+}
+
+
+model League {
+  id          Int      @id // API League ID
+  name        String
+  type        String    // League or Cup
+  country     String
+  flagUrl     String    // URL to the country flag
+  logoUrl     String
+  startDate   DateTime
+  endDate     DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  teams       Team[]
+}
+
+model Venue {
+  id          Int       @id // API Venue ID
+  name        String
+  address     String?
+  city        String
+  capacity    Int?
+  surface     String?
+  imageUrl    String
+
+  teams       Team[]    // Teams associated with this venue
+}
