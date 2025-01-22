@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import {
   Form,
@@ -9,26 +10,25 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { passwordSchema } from "@/validation/passwordSchema";
+import { Input } from "@/components/ui/input";
+import { passwordMatchSchema } from "@/validation/passwordMatchSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { loginUser } from "./actions";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { registerUser } from "./actions";
+import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import GoogleSignin from "./GoogleSignin";
 import FormHeader from "@/components/FormHeader";
 
-const formSchema = z.object({
-  email: z.string().email(),
-  password: passwordSchema,
-});
+const formSchema = z
+  .object({
+    email: z.string().email(),
+  })
+  .and(passwordMatchSchema);
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [serverError, setServerError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false); // Add loading state
   const router = useRouter();
@@ -38,6 +38,7 @@ export default function LoginForm() {
     defaultValues: {
       email: "",
       password: "",
+      passwordConfirm: "",
     },
   });
 
@@ -46,35 +47,30 @@ export default function LoginForm() {
     setIsLoading(true); // Set loading to true when submission starts
 
     try {
-      const response = await loginUser({
+      const response = await registerUser({
         email: data.email,
         password: data.password,
+        passwordConfirm: data.passwordConfirm,
       });
 
       if (response.error) {
         setServerError(response.message);
       } else {
-        // Redirect to the dashboard page
-        router.push("/dashboard");
+        // Redirect to the confirmation page
+        router.push("/register/confirmation");
       }
     } catch (error) {
-      console.error("Error logging in:", error);
+      console.error("Error registering:", error);
       setServerError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false); // Set loading to false when submission ends
     }
   };
 
-  // pass the email value to forget password page
-  const email = form.getValues("email");
-
   return (
     <main className='flex justify-center items-center min-h-screen'>
       <Card className='w-[380px]'>
-        <FormHeader
-          title='Welcome Back'
-          description='Login to catch all the action'
-        />
+        <FormHeader title='Register' description='Register for a new account' />
         <CardContent>
           <Form {...form}>
             <form
@@ -107,6 +103,19 @@ export default function LoginForm() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={form.control}
+                name='passwordConfirm'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password confirm</FormLabel>
+                    <FormControl>
+                      <Input {...field} type='password' />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               {serverError && (
                 <p className='text-red-500 text-sm mt-2'>{serverError}</p>
               )}
@@ -118,29 +127,17 @@ export default function LoginForm() {
                     Please wait
                   </>
                 ) : (
-                  "Login"
+                  "Register"
                 )}
               </Button>
-              <GoogleSignin />
             </form>
           </Form>
         </CardContent>
         <CardFooter className='flex-col gap-2'>
           <div className='text-muted-foreground text-sm'>
-            Don&apos;t have an account?{" "}
-            <Link href='/register' className='underline'>
-              Register
-            </Link>
-          </div>
-          <div className='text-muted-foreground text-sm'>
-            Forgot password?{" "}
-            <Link
-              href={`/forgot-password${
-                email ? `?email=${encodeURIComponent(email)}` : ""
-              }`}
-              className='underline'
-            >
-              Reset my password
+            Already have an account?{" "}
+            <Link href='/login' className='underline'>
+              Login
             </Link>
           </div>
         </CardFooter>
