@@ -1,46 +1,77 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { z } from "zod";
 
 import { createClient } from "@/utils/supabase/server";
+// import { redirect } from "next/navigation";
 
-export async function login(formData: FormData) {
-  const supabase = await createClient();
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(5), // Adjust the minimum length as needed
+});
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+export const loginUser = async ({
+  email,
+  password,
+}: {
+  email: string;
+  password: string;
+}) => {
+  const loginUserValidation = loginSchema.safeParse({
+    email,
+    password,
+  });
 
-  const { error } = await supabase.auth.signInWithPassword(data);
-
-  if (error) {
-    redirect("/error");
+  if (!loginUserValidation.success) {
+    return {
+      error: true,
+      message:
+        loginUserValidation.error.issues[0]?.message ?? "An error occured",
+    };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
-}
+  // supabase authentication from here
+  const supabase = createClient();
 
-export async function signup(formData: FormData) {
-  const supabase = await createClient();
+  ///////////////////////////// TEST for redirection ///////////
+  // const { data, error } = await supabase.auth.getUser();
+  // const {
+  //   data: { user },
+  // } = await supabase.auth.getUser();
 
-  // type-casting here for convenience
-  // in practice, you should validate your inputs
-  const data = {
-    email: formData.get("email") as string,
-    password: formData.get("password") as string,
-  };
+  // if (user) {
+  //   return redirect("/dashboard");
+  // }
 
-  const { error } = await supabase.auth.signUp(data);
+  ///////////////////////////////////////////
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
-    redirect("/error");
+    return {
+      error: true,
+      message: error.message,
+    };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/");
-}
+  if (!data.user) {
+    return {
+      error: true,
+      message: "Login failed. Please try again.",
+    };
+  }
+
+  // User successfully logged in
+  return {
+    success: true,
+    message: "Login successful",
+    user: {
+      id: data.user.id,
+      email: data.user.email,
+      // Add any other user data you want to return
+    },
+  };
+};
