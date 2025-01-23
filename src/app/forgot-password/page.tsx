@@ -107,7 +107,7 @@ export default function ForgotPassword() {
                     Please wait
                   </>
                 ) : (
-                  "Forget password"
+                  "Reset password"
                 )}
               </Button>
             </form>

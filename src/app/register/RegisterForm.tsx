@@ -25,6 +25,7 @@ import FormHeader from "@/components/FormHeader";
 const formSchema = z
   .object({
     email: z.string().email(),
+    name: z.string().min(3),
   })
   .and(passwordMatchSchema);
 
@@ -83,6 +84,19 @@ export default function RegisterForm() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
