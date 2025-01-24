@@ -6,7 +6,7 @@ import { z } from "zod";
 // import { revalidatePath } from "next/cache";
 // import { redirect } from "next/navigation";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClientForServer } from "@/utils/supabase/server";
 
 export const registerUser = async ({
   email,
@@ -37,7 +37,7 @@ export const registerUser = async ({
   }
 
   // supabase authentication from here
-  const supabase = createClient();
+  const supabase = await createClientForServer();
 
   const { data, error } = await supabase.auth.signUp({
     email,
