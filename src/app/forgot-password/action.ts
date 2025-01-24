@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClientForServer } from "@/utils/supabase/server";
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -22,7 +22,7 @@ export const forgotPassword = async ({ email }: { email: string }) => {
   }
 
   // supabase authentication from here
-  const supabase = createClient();
+  const supabase = await createClientForServer();
 
   const { error } = await supabase.auth.resetPasswordForEmail(email);
 

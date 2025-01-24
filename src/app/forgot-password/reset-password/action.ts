@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClientForServer } from "@/utils/supabase/server";
 
 export const resetPasswordFunc = async ({
   password,
@@ -29,7 +29,7 @@ export const resetPasswordFunc = async ({
   }
 
   // supabase authentication from here
-  const supabase = createClient();
+  const supabase = await createClientForServer();
 
   const { data, error } = await supabase.auth.updateUser({
     password: password,

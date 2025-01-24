@@ -1,36 +1,62 @@
-import { NextResponse, NextRequest } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { createClientForServer } from "@/utils/supabase/server";
+import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
+  const supabase = await createClientForServer();
   const body = await req.json();
-  const { id, email, name, image } = body;
 
-  if (!id || !email) {
+  console.log("Received request body:", body);
+
+  const { name, email, image } = body;
+
+  // Fetch the authenticated user's ID
+  console.log("Fetching authenticated user from Supabase Auth...");
+  const { data: authUser, error: authError } = await supabase.auth.getUser();
+
+  console.log("getUser Response:", { authUser, authError });
+
+  if (authError || !authUser) {
+    console.error("Authentication Error:", authError);
     return NextResponse.json(
-      { error: "ID and email are required" },
+      { message: "Unauthorized or failed to get user." },
+      { status: 401 }
+    );
+  }
+
+  const userId = authUser.user?.id;
+
+  console.log("Authenticated user ID:", userId);
+  if (!userId || !email) {
+    console.error("Missing user ID or email.");
+    return NextResponse.json(
+      { message: "Invalid user ID or email." },
       { status: 400 }
     );
   }
 
-  try {
-    const user = await prisma.user.upsert({
-      where: { id },
-      update: {},
-      create: {
-        id,
-        email,
-        name,
-        image,
-      },
-    });
-    return NextResponse.json(user);
-  } catch (error) {
-    console.error("Error creating/updating user:", error);
+  console.log("Inserting user into the database...");
+  const { data: user, error: userError } = await supabase
+    .from("User")
+    .insert({
+      id: userId,
+      email,
+      name,
+      image,
+    })
+    .select("*")
+    .single();
+
+  console.log("Insert Response:", { user, userError });
+
+  if (userError) {
+    console.error("Database Insertion Error:", userError);
     return NextResponse.json(
-      { error: "Failed to create or update user" },
+      { message: "Failed to insert user into database." },
       { status: 500 }
     );
   }
+
+  console.log("User successfully registered in the database:", user);
+
+  return NextResponse.json({ user });
 }

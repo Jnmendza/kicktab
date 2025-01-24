@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-import { createClient } from "@/utils/supabase/server";
+import { createClientForServer } from "@/utils/supabase/server";
 // import { redirect } from "next/navigation";
 
 const loginSchema = z.object({
@@ -31,7 +31,7 @@ export const loginUser = async ({
   }
 
   // supabase authentication from here
-  const supabase = await createClient();
+  const supabase = await createClientForServer();
 
   ///////////////////////////// TEST for redirection ///////////
   // const { data, error } = await supabase.auth.getUser();
