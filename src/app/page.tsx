@@ -6,7 +6,7 @@ export default async function Home() {
 
   return (
     <div>
-      <h1>Welcome Home</h1>
+      <h1>Welcome to KickTab</h1>
       <pre>{JSON.stringify(session, null, 2)}</pre>
     </div>
   );
