@@ -2,12 +2,14 @@ import React from "react";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { CircleMinus } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { capitalizeFirstLetter } from "@/utils/utils";
 
-const FavoritesListItem = ({ id }: { id: number }) => {
+const FavoritesListItem = ({ id, code }: { id: number; code: string }) => {
   return (
     <div
       key={id}
-      className='flex flex-col w-auto items-center justify-end m-2 hover:animate-bounceOne'
+      className='flex flex-col w-auto h-[90px] items-center justify-end m-2 hover:animate-bounceOne'
     >
       <div className='relative'>
         <CircleMinus
@@ -24,6 +26,7 @@ const FavoritesListItem = ({ id }: { id: number }) => {
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </div>
+      <Badge className='mt-2'>{capitalizeFirstLetter(code)}</Badge>
     </div>
   );
 };

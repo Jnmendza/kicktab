@@ -6,16 +6,17 @@ import FavoritesListItem from "./FavoritesListItem";
 export type FavoriteTeam = {
   id: number;
   name: string;
+  code: string;
 };
 
 const favoriteTeams: FavoriteTeam[] = [
-  { id: 39, name: "Wolves" },
-  { id: 40, name: "Liverpool" },
-  { id: 41, name: "Southhampton" },
-  { id: 42, name: "Arseneal" },
-  { id: 43, name: "Brighton" },
-  { id: 44, name: "Brighton" },
-  { id: 45, name: "Brighton" },
+  { id: 39, name: "Wolves", code: "WOL" },
+  { id: 40, name: "Liverpool", code: "LIV" },
+  { id: 41, name: "Southhampton", code: "SOU" },
+  { id: 42, name: "Arsenal", code: "ARS" },
+  { id: 43, name: "Cardiff", code: "CAR" },
+  { id: 44, name: "Burnley", code: "BUR" },
+  { id: 45, name: "Everton", code: "EVE" },
 ];
 
 const FavoritesList = () => {
@@ -39,8 +40,8 @@ const FavoritesList = () => {
         }}
       />
       <div className='flex overflow-auto'>
-        {favoriteTeams.map(({ id }: FavoriteTeam) => (
-          <FavoritesListItem key={id} id={id} />
+        {favoriteTeams.map(({ id, code }: FavoriteTeam) => (
+          <FavoritesListItem key={id} id={id} code={code} />
         ))}
       </div>
     </div>
