@@ -71,8 +71,8 @@ const SearchContainer = () => {
         <Command>
           <CommandInput placeholder='Search a league...' className='h-9' />
           <CommandEmpty>No league found.</CommandEmpty>
-          <CommandList>
-            <CommandGroup>
+          <CommandGroup>
+            <CommandList>
               {leagues.map((league) => (
                 <CommandItem
                   key={league.value}
@@ -91,8 +91,8 @@ const SearchContainer = () => {
                   />
                 </CommandItem>
               ))}
-            </CommandGroup>
-          </CommandList>
+            </CommandList>
+          </CommandGroup>
         </Command>
       </PopoverContent>
     </Popover>
