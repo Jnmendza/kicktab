@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClientForServer } from "@/utils/supabase/server";
 import Image from "next/image";
+import SearchContainer from "@/components/SearchContainer";
 
 export default async function Dashboard() {
   const supabase = await createClientForServer();
@@ -22,9 +23,8 @@ export default async function Dashboard() {
 
       {/* Overlay Content */}
       <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'>
-        <h1 className='text-4xl font-bold'>Welcome to the Dashboard</h1>
-        <p className='mt-4 text-lg'>This is your personalized dashboard.</p>
         {/* Add your UI elements here */}
+        <SearchContainer />
       </div>
     </div>
   );

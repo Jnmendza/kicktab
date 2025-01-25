@@ -4,13 +4,13 @@ import { Instagram, Github, Facebook } from "lucide-react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className='flex flex-col md:flex-row justify-between items-center px-10 md:px-36 py-10 bg-black text-white'>
+    <footer className='flex flex-col md:flex-row justify-between items-center px-6 md:px-36 py-10 bg-black text-white'>
       <div className='flex flex-col items-center mb-4 md:mb-0'>
         <Image
           src='/assets/logo.png'
           alt='Login Image'
-          width={190}
-          height={200}
+          width={230}
+          height={220}
         />
         <p className='mt-2'>© 2025 All Rights Reserved</p>
       </div>
