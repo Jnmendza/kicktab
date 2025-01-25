@@ -10,9 +10,25 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      keyframes: {
+        bounce: {
+          "0%, 100%": {
+            transform: "translateY(-20%)",
+            animationTimingFunction: "ease-in-out",
+          },
+          "50%": {
+            transform: "translateY(0)",
+            animationTimingFunction: "ease-in-out",
+          },
+        },
+      },
+      animation: {
+        bounceOne: "bounce 1s linear ",
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        lime: "#32CD32",
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
