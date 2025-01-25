@@ -22,6 +22,7 @@ export default async function Dashboard() {
       />
 
       {/* Overlay Content */}
+      {/* <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'> */}
       <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'>
         {/* Add your UI elements here */}
         <SearchContainer />

@@ -1,101 +1,40 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
-
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-
-const leagues = [
-  {
-    id: 1,
-    value: "premier-league",
-    label: "Premier League",
-  },
-  {
-    id: 2,
-    value: "la-liga",
-    label: "La Liga",
-  },
-  {
-    id: 3,
-    value: "ligue-1",
-    label: "Ligue 1",
-  },
-  {
-    id: 4,
-    value: "serie-a",
-    label: "Seria A",
-  },
-  {
-    id: 5,
-    value: "mls",
-    label: "MLS",
-  },
-];
+import Search from "./Search";
+import { Card } from "./ui/card";
+import WaterMark from "./WaterMark";
+import FavoritesList from "./FavoritesList";
+import TeamList from "./TeamList";
+import useSWR from "swr";
+import { fetcher } from "@/utils/utils";
 
 const SearchContainer = () => {
-  const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  console.log("SearchContainer Selected ID:", selectedId);
+  const { data: leagues } = useSWR(`/api/leagues`, fetcher);
+  console.log("LEAGUES", leagues);
+  const handleSelect = (id: number | null) => {
+    setSelectedId(id);
+    console.log("SearchContainer Selected ID:", id);
+  };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          role='combobox'
-          aria-expanded={open}
-          className='w-[200px] justify-between bg-black'
-        >
-          {selectedId
-            ? leagues.find((league) => league.id === selectedId)?.label
-            : "Select a league..."}
-          <ChevronsUpDown className='opacity-50' />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className='w-[200px] p-0'>
-        <Command>
-          <CommandInput placeholder='Search a league...' className='h-9' />
-          <CommandEmpty>No league found.</CommandEmpty>
-          <CommandGroup>
-            <CommandList>
-              {leagues.map((league) => (
-                <CommandItem
-                  key={league.value}
-                  value={league.value}
-                  onSelect={() => {
-                    setSelectedId(league.id === selectedId ? null : league.id);
-                    setOpen(false);
-                  }}
-                >
-                  {league.label}
-                  <Check
-                    className={cn(
-                      "ml-auto",
-                      selectedId === league.id ? "opacity-100" : "opacity-0"
-                    )}
-                  />
-                </CommandItem>
-              ))}
-            </CommandList>
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <Card className='h-[750px] w-[80%] border border-[#006400] bg-black bg-opacity-30 rounded-xl p-8 flex flex-col'>
+      <Search
+        leagues={leagues}
+        selectedId={selectedId}
+        onSelect={handleSelect}
+      />
+      {/* WaterMark and FavoritesList container */}
+      <div className='flex-grow flex flex-col items-center justify-center'>
+        {selectedId === null ? (
+          <WaterMark />
+        ) : (
+          <TeamList leagueId={selectedId} />
+        )}
+      </div>
+      <FavoritesList />
+    </Card>
   );
 };
 
