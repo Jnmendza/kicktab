@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 export async function GET() {
   try {
-    const leagues = await prisma.league.findMany();
+    const leagues = await db.league.findMany();
     return NextResponse.json(leagues);
   } catch (error) {
     console.error("Error fetching leagues;", error);

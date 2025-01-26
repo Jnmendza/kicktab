@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -15,7 +13,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const teams = await prisma.team.findMany({
+    const teams = await db.team.findMany({
       where: { leagueId: Number(leagueId) },
     });
     return NextResponse.json(teams);

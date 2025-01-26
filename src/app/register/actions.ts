@@ -7,13 +7,16 @@ import { z } from "zod";
 // import { redirect } from "next/navigation";
 
 import { createClientForServer } from "@/utils/supabase/server";
+import { db } from "@/lib/db";
 
 export const registerUser = async ({
   email,
+  userName,
   password,
   passwordConfirm,
 }: {
   email: string;
+  userName: string;
   password: string;
   passwordConfirm: string;
 }) => {
@@ -25,6 +28,7 @@ export const registerUser = async ({
 
   const newUserValidation = newUserSchema.safeParse({
     email,
+    userName,
     password,
     passwordConfirm,
   });
@@ -56,6 +60,27 @@ export const registerUser = async ({
       error: true,
       message: "Email already in use",
     };
+  }
+
+  const supabaseUserId = data.user?.id;
+
+  // Insert the new user into Prisma DB
+  try {
+    await db.user.create({
+      data: {
+        id: supabaseUserId,
+        email,
+        userName,
+      },
+    });
+  } catch (dbError) {
+    console.error(dbError);
+    return {
+      error: true,
+      message: "Failed to create user in the database",
+    };
+  } finally {
+    await db.$disconnect();
   }
 
   // User successfully created

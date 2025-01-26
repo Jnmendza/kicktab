@@ -15,9 +15,9 @@ datasource db {
 }
 
 model User {
-  id          String    @id @default(cuid()) // Unique ID
+  id          String    @id // Supabase-generated ID
   email       String    @unique
-  name        String?
+  userName    String?
   image       String?   // Optional profile picture
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

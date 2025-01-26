@@ -25,7 +25,7 @@ import FormHeader from "@/components/FormHeader";
 const formSchema = z
   .object({
     email: z.string().email(),
-    name: z.string().min(3),
+    userName: z.string().min(3),
   })
   .and(passwordMatchSchema);
 
@@ -38,6 +38,7 @@ export default function RegisterForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
+      userName: "",
       password: "",
       passwordConfirm: "",
     },
@@ -50,6 +51,7 @@ export default function RegisterForm() {
     try {
       const response = await registerUser({
         email: data.email,
+        userName: data.userName,
         password: data.password,
         passwordConfirm: data.passwordConfirm,
       });
@@ -93,7 +95,7 @@ export default function RegisterForm() {
               />
               <FormField
                 control={form.control}
-                name='name'
+                name='userName'
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Username</FormLabel>
