@@ -18,19 +18,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-
-export type League = {
-  id: number;
-  type: string;
-  name: string;
-  country: string;
-  flagUrl: string;
-  logoUrl: string;
-  startDate: Date;
-  endDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
-};
+import { League } from "@/types/types";
 
 interface SearchProps {
   leagues: League[];
@@ -43,7 +31,7 @@ const Search: React.FC<SearchProps> = ({
   selectedId = null,
   onSelect = () => {},
 }) => {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

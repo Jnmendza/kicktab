@@ -9,6 +9,7 @@ export default async function Dashboard() {
   if (error || !data?.user) {
     redirect("/login");
   }
+  const userId = data.user.id;
 
   return (
     <div className='relative min-h-screen'>
@@ -25,7 +26,7 @@ export default async function Dashboard() {
       {/* <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'> */}
       <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'>
         {/* Add your UI elements here */}
-        <SearchContainer />
+        <SearchContainer userId={userId} />
       </div>
     </div>
   );

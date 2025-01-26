@@ -1,3 +1,4 @@
+import { Favorite } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -25,4 +26,11 @@ export function capitalizeFirstLetter(input: string | null): string {
     throw new Error("Input must be a string of 3 capitalized characters");
   }
   return input.charAt(0) + input.slice(1).toLowerCase();
+}
+
+export function isTeamInFavorites(
+  favorites: Favorite[] = [],
+  teamId: number
+): boolean {
+  return favorites.some((fav) => fav.teamId === teamId);
 }

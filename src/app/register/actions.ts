@@ -64,6 +64,13 @@ export const registerUser = async ({
 
   const supabaseUserId = data.user?.id;
 
+  if (!supabaseUserId) {
+    return {
+      error: true,
+      message: "Failed to retrieve user ID from Supabase",
+    };
+  }
+
   // Insert the new user into Prisma DB
   try {
     await db.user.create({
