@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { db } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -12,7 +10,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const favorites = await prisma.favorite.findMany({
+    const favorites = await db.favorite.findMany({
       where: { userId },
       include: { team: true },
     });
@@ -38,7 +36,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const favorite = await prisma.favorite.create({
+    const favorite = await db.favorite.create({
       data: { userId, teamId },
     });
     return NextResponse.json(favorite);
@@ -60,7 +58,7 @@ export async function DELETE(req: NextRequest) {
   }
 
   try {
-    await prisma.favorite.delete({
+    await db.favorite.delete({
       where: { id: Number(favoriteId) },
     });
     return NextResponse.json({ message: "Favorite deleted successfully" });

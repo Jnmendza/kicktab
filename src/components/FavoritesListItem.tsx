@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { CircleMinus } from "lucide-react";
 import { Badge } from "./ui/badge";
-import { capitalizeFirstLetter } from "@/utils/utils";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 const FavoritesListItem = ({ id, code }: { id: number; code: string }) => {
   return (

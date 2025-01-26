@@ -3,7 +3,7 @@ import TeamListItem from "./TeamListItem";
 import { FavoriteTeam } from "./FavoritesList";
 import useSWR from "swr";
 import { ScrollArea } from "./ui/scroll-area";
-import { fetcher } from "@/utils/utils";
+import { fetcher } from "@/lib/utils";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
 const TeamList = ({ leagueId }: { leagueId: number }) => {

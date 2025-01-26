@@ -7,7 +7,7 @@ import WaterMark from "./WaterMark";
 import FavoritesList from "./FavoritesList";
 import TeamList from "./TeamList";
 import useSWR from "swr";
-import { fetcher } from "@/utils/utils";
+import { fetcher } from "@/lib/utils";
 
 const SearchContainer = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
