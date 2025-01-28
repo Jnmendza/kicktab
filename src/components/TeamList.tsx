@@ -1,28 +1,23 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import TeamListItem from "./TeamListItem";
-import { FavoriteTeam } from "./FavoritesList";
 import useSWR from "swr";
 import { ScrollArea } from "./ui/scroll-area";
-import { fetcher, isTeamInFavorites } from "@/lib/utils";
+import { fetcher } from "@/lib/utils";
 import Image from "next/image";
 import { Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
-import { Favorite } from "@prisma/client";
+import useUserStore from "@/store/userStore";
 
-type FavoritesData = {
-  teamId: number;
+type FavoriteTeam = {
+  id: number;
+  name: string;
+  code: string;
 };
 
-const TeamList = ({
-  leagueId,
-  favorites,
-}: {
-  leagueId: number;
-  favorites: Favorite[];
-}) => {
-  const [favoritesData, setFavortieData] = useState<FavoritesData[]>([]);
+const TeamList = ({ leagueId }: { leagueId: number }) => {
+  const { selectedFavorites, saveFavorites } = useUserStore();
   const { toast } = useToast();
 
   const {
@@ -31,41 +26,12 @@ const TeamList = ({
     isLoading,
   } = useSWR(`/api/teams?leagueId=${leagueId}`, fetcher);
 
-  const handleAddFavorite = (teamId: number) => {
-    setFavortieData((prevFavorites) => {
-      // Check if the team is already in the favorites
-      const isAlreadyFavorite = prevFavorites.some(
-        (fav) => fav.teamId === teamId
-      );
-
-      if (isAlreadyFavorite) {
-        // Remove it if it already exists
-        return prevFavorites.filter((fav) => fav.teamId !== teamId);
-      }
-
-      // Add it if it doesn't exist
-      return [...prevFavorites, { teamId }];
-    });
-  };
-
   const saveFavoritesToDB = async () => {
     try {
-      const response = await fetch("/api/favorites", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ favorites: favoritesData }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save favorites.");
-      }
-
+      await saveFavorites(); // Call the Zustand store action to save favs
       toast({
-        title: "Favorites saved successfully!",
+        title: "Favorites saved successfully",
       });
-      setFavortieData([]);
     } catch (error) {
       console.error(error);
       toast({
@@ -74,7 +40,7 @@ const TeamList = ({
     }
   };
 
-  console.log("Favorites Data", favoritesData);
+  console.log("Favorites Data", selectedFavorites);
 
   if (isLoading)
     return (
@@ -106,20 +72,14 @@ const TeamList = ({
     <div className='w-full mt-4'>
       <ScrollArea className='h-[31rem] w-full'>
         {teams.map(({ id, name }: FavoriteTeam) => (
-          <TeamListItem
-            key={id}
-            teamId={id}
-            teamName={name}
-            onToggleFavorites={handleAddFavorite}
-            isFavorite={isTeamInFavorites(favorites, id)}
-          />
+          <TeamListItem key={id} teamId={id} teamName={name} />
         ))}
       </ScrollArea>
       <div className='mt-4 mr-6 flex justify-end'>
         <Button
           onClick={saveFavoritesToDB}
           className='px-4 py-2 bg-lime text-white rounded-md hover:bg-green-600'
-          disabled={favoritesData.length === 0}
+          disabled={selectedFavorites.length === 0}
         >
           Save Favorites
         </Button>

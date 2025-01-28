@@ -5,7 +5,14 @@ import { CircleMinus } from "lucide-react";
 // import { Badge } from "./ui/badge";
 // import { capitalizeFirstLetter } from "@/lib/utils";
 
-const FavoritesListItem = ({ id }: { id: number }) => {
+interface FavoriteItem {
+  id: number;
+  teamId: number;
+  handleRemove: (favoriteId: number) => void;
+}
+
+const FavoritesListItem = ({ id, teamId, handleRemove }: FavoriteItem) => {
+  console.log("FavoritesListItem", { id, teamId });
   return (
     <div
       key={id}
@@ -17,10 +24,11 @@ const FavoritesListItem = ({ id }: { id: number }) => {
           color='red'
           strokeWidth={3}
           className='absolute top-[-5] right-[-7] cursor-pointer'
+          onClick={() => handleRemove(id)}
         />
         <Avatar>
           <AvatarImage
-            src={`https://media.api-sports.io/football/teams/${id}.png`}
+            src={`https://media.api-sports.io/football/teams/${teamId}.png`}
             alt='avatar'
           />
           <AvatarFallback>CN</AvatarFallback>

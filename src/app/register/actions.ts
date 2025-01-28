@@ -8,6 +8,7 @@ import { z } from "zod";
 
 import { createClientForServer } from "@/utils/supabase/server";
 import { db } from "@/lib/db";
+import { createAdminClient } from "@/utils/supabase/admin";
 
 export const registerUser = async ({
   email,
@@ -90,7 +91,25 @@ export const registerUser = async ({
     await db.$disconnect();
   }
 
-  // User successfully created
+  // User successfully created now update the users metadata by using Admin API. Do not use updateUser because it requires a session
+  try {
+    const adminClient = createAdminClient();
+    const { error: updateError } = await adminClient.auth.admin.updateUserById(
+      supabaseUserId,
+      {
+        user_metadata: {
+          userName,
+        },
+      }
+    );
+
+    if (updateError) {
+      console.error("Error updating user metadata:", updateError);
+      return { error: true, message: "Failed to update user metadata." };
+    }
+  } catch (updateError) {
+    console.error("Error updating user metadata", updateError);
+  }
   return {
     success: true,
     message: "Check your email for the confirmation link",

@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const favorites = await getUsersFavorties(userId);
+    console.log("ENDPOINT favorites", favorites);
     return NextResponse.json(favorites);
   } catch (error) {
     console.error("Error fetching favorites:", error);
@@ -68,41 +69,27 @@ export async function POST(req: NextRequest) {
     }));
 
     //Use createMany for multiple entries
-    const result = await db.favorite.createMany({
+    await db.favorite.createMany({
       data: formattedData,
       skipDuplicates: true, // Avoid duplicate entries
     });
 
+    //Fetch the newly created favorites to return them in the response
+    const newFavorites = await db.favorite.findMany({
+      where: {
+        userId,
+        teamId: { in: favorites.map((fav: { teamId: number }) => fav.teamId) },
+      },
+    });
+
     return NextResponse.json({
       message: "Favorites added successfully",
-      result,
+      newFavorites,
     });
   } catch (error) {
     console.error("Error adding favorite:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const favoriteId = searchParams.get("id");
-
-  if (!favoriteId) {
-    return NextResponse.json({ error: "id is required" }, { status: 400 });
-  }
-
-  try {
-    await db.favorite.delete({
-      where: { id: Number(favoriteId) },
-    });
-    return NextResponse.json({ message: "Favorite deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting favorite:", error);
-    return NextResponse.json(
-      { error: "Failed to delete favorite" },
       { status: 500 }
     );
   }

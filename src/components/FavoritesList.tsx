@@ -2,22 +2,25 @@ import React from "react";
 import { CardHeader } from "./ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import FavoritesListItem from "./FavoritesListItem";
-import { Favorite } from "@prisma/client";
+import useUserStore from "@/store/userStore";
+import { Favorite } from "@/types/types";
+// import { useQuery } from "@tanstack/react-query";
+// import { getUsersFavorties } from "@/app/data/favorites";
 
-export type FavoriteTeam = {
-  id: number;
-  name: string;
-  code: string;
-};
-
-interface FavoritesListProps {
-  favorites: Favorite[];
-}
-
-const FavoritesList = ({ favorites }: FavoritesListProps) => {
+const FavoritesList = () => {
+  const favorites = useUserStore((state) => state.favorites);
+  console.log("FROM LIST", favorites);
+  const removeFavoriteFromDB = useUserStore(
+    (state) => state.removeFavoriteFromDB
+  );
   const favoritesLimit = 7;
   const favoritesCount = favorites.length;
   const count = `${favoritesCount} / ${favoritesLimit}`;
+
+  const handleRemove = (favoriteId: number) => {
+    removeFavoriteFromDB(favoriteId);
+  };
+
   return (
     <div className='flex flex-row  items-center bg-transparent text-white'>
       <CardHeader className='flex items-center justify-center'>
@@ -36,7 +39,12 @@ const FavoritesList = ({ favorites }: FavoritesListProps) => {
       />
       <div className='flex overflow-auto'>
         {favorites.map(({ id, teamId }: Favorite) => (
-          <FavoritesListItem key={id} id={teamId} />
+          <FavoritesListItem
+            key={id}
+            id={id}
+            teamId={teamId}
+            handleRemove={() => id !== undefined && handleRemove(id)}
+          />
         ))}
       </div>
     </div>

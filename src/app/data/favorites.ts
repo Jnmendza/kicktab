@@ -6,6 +6,7 @@ export const getUsersFavorties = async (userId: string) => {
       where: { userId },
       include: { team: true },
     });
+
     return favorites;
   } catch (error) {
     console.error("Error fetching favorites in utility:", error);

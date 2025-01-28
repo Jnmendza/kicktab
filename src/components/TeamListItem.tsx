@@ -1,26 +1,30 @@
-import React, { useState } from "react";
+// import React from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import useUserStore from "@/store/userStore";
 
-interface ListTeam {
+interface ListItem {
   teamId: number;
   teamName: string;
-  isFavorite: boolean;
-  onToggleFavorites: (teamId: number) => void;
 }
 
-const TeamListItem = ({
-  teamId,
-  teamName,
-  isFavorite,
-  onToggleFavorites,
-}: ListTeam) => {
-  const [isFollowed, setIsFollowed] = useState(false);
-  console.log("IS this my fav team", isFavorite);
+const TeamListItem = ({ teamId, teamName }: ListItem) => {
+  const {
+    favorites,
+    selectedFavorites,
+    addFavoriteToDeck,
+    removeFavoriteFromDeck,
+  } = useUserStore();
+  const isFollowing = favorites.some((fav) => fav.teamId === teamId);
+  const isSelected = selectedFavorites.some((fav) => fav.teamId === teamId);
+
   const handleFollowClick = () => {
-    setIsFollowed((prev) => !prev); // Toggle the follow state
-    onToggleFavorites(teamId); // Notify the parent to update favorites
+    if (isSelected) {
+      removeFavoriteFromDeck(teamId);
+    } else {
+      addFavoriteToDeck(teamId);
+    }
   };
 
   return (
@@ -41,13 +45,16 @@ const TeamListItem = ({
         <Button
           variant='outline'
           onClick={handleFollowClick}
-          className={`mr-6 bg-transparent text-white hover:bg-opacity-20 ${
-            isFollowed
-              ? "bg-green-500 text-white hover:bg-green-600"
-              : "hover:bg-white"
+          disabled={isFollowing}
+          className={`mr-6 px-4 py-2 rounded ${
+            isFollowing
+              ? "bg-gray-400 text-white cursor-not-allowed"
+              : isSelected
+                ? "bg-blue-500 text-white"
+                : "bg-green-500 text-white"
           }`}
         >
-          {isFollowed ? "Selected" : "Follow"}
+          {isFollowing ? "Following" : isSelected ? "Selected" : "Follow"}
         </Button>
       </div>
       <Separator className='w-[95%] m-auto' />
