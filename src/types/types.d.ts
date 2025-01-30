@@ -4,7 +4,13 @@ declare global {
   let prisma: PrismaClient | undefined;
 }
 
-export type FavoriteTeam = { teamId: number; id?: number; teamCode: string };
+export type FavoriteTeam = {
+  teamId: number;
+  id?: number;
+  teamCode: string;
+  createdAt?: string;
+  userId?: string | null;
+};
 
 export type League = {
   id: number;

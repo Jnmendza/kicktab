@@ -4,8 +4,6 @@ import { AvatarImage } from "@radix-ui/react-avatar";
 import { CircleMinus } from "lucide-react";
 import { Badge } from "./ui/badge";
 import { capitalizeFirstLetter } from "@/lib/utils";
-// import { Badge } from "./ui/badge";
-// import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface FavoriteItem {
   id: number;

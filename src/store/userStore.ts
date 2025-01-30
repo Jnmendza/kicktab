@@ -1,7 +1,7 @@
 import { FavoriteTeam } from "@/types/types";
 import { create } from "zustand";
 import { fetchUserData } from "@/lib/user";
-import axios from "axios";
+import { FAVORITES_LIMIT } from "@/lib/constants";
 
 interface UserStore {
   id: string | null;
@@ -35,36 +35,15 @@ const useUserStore = create<UserStore>((set, get) => ({
   fetchFavorites: async (userId) => {
     set({ loadingState: true });
     try {
-      const response = await axios.get(
-        `${process.env.NEXT_PUBLIC_SITE_URL}/api/favorites`,
-        {
-          params: { userId },
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-
-      if (response.status === 200) {
-        const favoritesData = response.data;
-        console.log("STORE", favoritesData);
-        const favorites = favoritesData.map(
-          (fav: {
-            createdAt: Date;
-            id: number;
-            userId: string;
-            teamId: number;
-            team: { code: string };
-          }) => ({
-            createdAt: fav.createdAt,
-            id: fav.id,
-            userId: fav.userId,
-            teamId: fav.teamId,
-            teamCode: fav.team.code,
-          })
-        );
-        set({ favorites });
-      } else {
+      const response = await fetch(`/api/favorites?userId=${userId}`);
+      if (!response.ok) {
         throw new Error("Failed to fetch favorites.");
       }
+
+      const favoritesData = await response.json();
+      set({
+        favorites: favoritesData,
+      });
     } catch (error) {
       console.error("Error fetching favorites:", error);
     } finally {
@@ -79,7 +58,7 @@ const useUserStore = create<UserStore>((set, get) => ({
     const { selectedFavorites, favorites } = get();
     const totalFavorites = selectedFavorites.length + favorites.length;
 
-    if (totalFavorites < 7) {
+    if (totalFavorites < FAVORITES_LIMIT) {
       if (!selectedFavorites.some((fav) => fav.teamId === teamId)) {
         set({
           selectedFavorites: [...selectedFavorites, { teamId, teamCode }],
@@ -98,8 +77,8 @@ const useUserStore = create<UserStore>((set, get) => ({
     });
   },
   saveFavorites: async () => {
-    const { selectedFavorites, favorites } = get();
-    console.log("STORE - selected Favs", selectedFavorites);
+    const { selectedFavorites, id } = get();
+
     try {
       const response = await fetch(`/api/favorites`, {
         method: "POST",
@@ -107,35 +86,52 @@ const useUserStore = create<UserStore>((set, get) => ({
         body: JSON.stringify({ favorites: selectedFavorites }),
       });
 
-      if (response.ok) {
-        set({
-          favorites: [...favorites, ...selectedFavorites],
-          selectedFavorites: [],
-        });
-
-        console.log("Favorites saved successfully!");
-      } else {
-        throw new Error("Failed to save favorites.");
+      if (!response.ok) {
+        throw new Error("Failed to save favorites");
       }
+
+      // Refetch favorites from the database
+      const refetchResponse = await fetch(`/api/favorites?userId=${id}`);
+      if (!refetchResponse.ok) {
+        throw new Error("Failed to refetch favorites.");
+      }
+
+      const refetchedFavorites = await refetchResponse.json();
+
+      // Update the state with the refetched favorites
+      set({
+        favorites: refetchedFavorites,
+        selectedFavorites: [], // Clear selectedFavorites
+      });
+
+      console.log("Favorites save and refetched successfully!");
     } catch (error) {
       console.error("Error saving favorites:", error);
     }
   },
   removeFavoriteFromDB: async (favoriteId) => {
-    const { favorites } = get();
+    const { id } = get();
+
     try {
       const response = await fetch(`/api/favorites/${favoriteId}`, {
         method: "DELETE",
       });
 
-      if (response.ok) {
-        set({
-          favorites: favorites.filter((fav) => fav.id !== favoriteId),
-        });
-        console.log("Favorite removed successfully!");
-      } else {
-        throw new Error("Failed to remove favorite.");
+      if (!response.ok) {
+        throw new Error("Failed to remove favorites.");
       }
+
+      // Refetch favorites from the db
+      const refetchResponse = await fetch(`/api/favorites?userId=${id}`);
+      if (!refetchResponse.ok) {
+        throw new Error("Failed to refetch favorites.");
+      }
+
+      const refetchedFavorites = await refetchResponse.json();
+
+      // Update the state with the refetched favorites
+      set({ favorites: refetchedFavorites });
+      console.log("Favorite removed and refetched successfully");
     } catch (error) {
       console.error("Error removing favorite:", error);
     }

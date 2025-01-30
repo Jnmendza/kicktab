@@ -29,12 +29,15 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
     try {
       await saveFavorites(); // Call the Zustand store action to save favs
       toast({
-        title: "Favorites saved successfully",
+        title: "Favorites saved successfully! 🎉",
+        description: "Your selected teams are now saved.",
       });
     } catch (error) {
       console.error(error);
       toast({
-        title: "Error saving favorites. Please try again.",
+        title: "Failed to save favorites. 😢",
+        description: "Please try again.",
+        variant: "destructive",
       });
     }
   };

@@ -4,6 +4,7 @@ import "./globals.css";
 import ClientLayout from "@/components/ClientLayout"; // New client component for dynamic logic
 
 import { ReactQueryProvider } from "@/components/ReactQueryProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,7 +32,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
         <ReactQueryProvider>
-          <ClientLayout>{children}</ClientLayout>
+          <ClientLayout>
+            <Toaster />
+            {children}
+          </ClientLayout>
         </ReactQueryProvider>
       </body>
     </html>

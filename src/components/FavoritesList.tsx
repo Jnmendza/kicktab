@@ -1,21 +1,37 @@
+"use client";
 import React from "react";
 import { CardHeader } from "./ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import FavoritesListItem from "./FavoritesListItem";
 import useUserStore from "@/store/userStore";
 import { FavoriteTeam } from "@/types/types";
+import { useToast } from "@/hooks/use-toast";
+import { FAVORITES_LIMIT } from "@/lib/constants";
 
 const FavoritesList = () => {
+  const { toast } = useToast();
   const favorites = useUserStore((state) => state.favorites);
+  console.log("Favoirtes in FavoritesList:", favorites);
   const removeFavoriteFromDB = useUserStore(
     (state) => state.removeFavoriteFromDB
   );
-  const favoritesLimit = 7;
-  const favoritesCount = favorites.length;
-  const count = `${favoritesCount} / ${favoritesLimit}`;
 
-  const handleRemove = (favoriteId: number) => {
-    removeFavoriteFromDB(favoriteId);
+  const favoritesCount = favorites.length;
+  const count = `${favoritesCount} / ${FAVORITES_LIMIT}`;
+
+  const handleRemove = async (favoriteId: number) => {
+    try {
+      await removeFavoriteFromDB(favoriteId);
+      toast({
+        title: "Favorite removed! ✅",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to remove favorite. 😢",
+        variant: "destructive",
+      });
+      console.error({ message: "Failure removing favoirte" }, error);
+    }
   };
 
   return (
