@@ -25,7 +25,6 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
     error,
     isLoading,
   } = useSWR(`/api/teams?leagueId=${leagueId}`, fetcher);
-
   const saveFavoritesToDB = async () => {
     try {
       await saveFavorites(); // Call the Zustand store action to save favs
@@ -39,8 +38,6 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
       });
     }
   };
-
-  console.log("Favorites Data", selectedFavorites);
 
   if (isLoading)
     return (
@@ -71,8 +68,8 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
   return (
     <div className='w-full mt-4'>
       <ScrollArea className='h-[31rem] w-full'>
-        {teams.map(({ id, name }: FavoriteTeam) => (
-          <TeamListItem key={id} teamId={id} teamName={name} />
+        {teams.map(({ id, name, code }: FavoriteTeam) => (
+          <TeamListItem key={id} teamId={id} teamCode={code} teamName={name} />
         ))}
       </ScrollArea>
       <div className='mt-4 mr-6 flex justify-end'>

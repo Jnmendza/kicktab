@@ -61,12 +61,15 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
+    console.log("Route favs", favorites);
     // Format the favorites data
-    const formattedData = favorites.map((fav: { teamId: number }) => ({
-      userId,
-      teamId: fav.teamId,
-    }));
+    const formattedData = favorites.map(
+      (fav: { teamId: number; teamCode: string }) => ({
+        userId,
+        teamId: fav.teamId,
+        teamCode: fav.teamCode,
+      })
+    );
 
     //Use createMany for multiple entries
     await db.favorite.createMany({

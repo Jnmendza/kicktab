@@ -3,13 +3,10 @@ import { CardHeader } from "./ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import FavoritesListItem from "./FavoritesListItem";
 import useUserStore from "@/store/userStore";
-import { Favorite } from "@/types/types";
-// import { useQuery } from "@tanstack/react-query";
-// import { getUsersFavorties } from "@/app/data/favorites";
+import { FavoriteTeam } from "@/types/types";
 
 const FavoritesList = () => {
   const favorites = useUserStore((state) => state.favorites);
-  console.log("FROM LIST", favorites);
   const removeFavoriteFromDB = useUserStore(
     (state) => state.removeFavoriteFromDB
   );
@@ -38,14 +35,18 @@ const FavoritesList = () => {
         }}
       />
       <div className='flex overflow-auto'>
-        {favorites.map(({ id, teamId }: Favorite) => (
-          <FavoritesListItem
-            key={id}
-            id={id}
-            teamId={teamId}
-            handleRemove={() => id !== undefined && handleRemove(id)}
-          />
-        ))}
+        {favorites.map(
+          ({ id, teamId, teamCode }: FavoriteTeam) =>
+            id !== undefined && (
+              <FavoritesListItem
+                key={id}
+                id={id}
+                teamCode={teamCode}
+                teamId={teamId}
+                handleRemove={() => handleRemove(id)}
+              />
+            )
+        )}
       </div>
     </div>
   );

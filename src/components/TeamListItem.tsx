@@ -7,9 +7,10 @@ import useUserStore from "@/store/userStore";
 interface ListItem {
   teamId: number;
   teamName: string;
+  teamCode: string;
 }
 
-const TeamListItem = ({ teamId, teamName }: ListItem) => {
+const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
   const {
     favorites,
     selectedFavorites,
@@ -18,12 +19,11 @@ const TeamListItem = ({ teamId, teamName }: ListItem) => {
   } = useUserStore();
   const isFollowing = favorites.some((fav) => fav.teamId === teamId);
   const isSelected = selectedFavorites.some((fav) => fav.teamId === teamId);
-
   const handleFollowClick = () => {
     if (isSelected) {
       removeFavoriteFromDeck(teamId);
     } else {
-      addFavoriteToDeck(teamId);
+      addFavoriteToDeck(teamId, teamCode);
     }
   };
 

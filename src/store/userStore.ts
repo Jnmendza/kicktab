@@ -1,4 +1,4 @@
-import { Favorite } from "@/types/types";
+import { FavoriteTeam } from "@/types/types";
 import { create } from "zustand";
 import { fetchUserData } from "@/lib/user";
 import axios from "axios";
@@ -6,14 +6,14 @@ import axios from "axios";
 interface UserStore {
   id: string | null;
   userName: string | null;
-  favorites: Favorite[]; // Favorites saved in the DB
+  favorites: FavoriteTeam[]; // Favorites saved in the DB
   loadingState: boolean;
-  selectedFavorites: Favorite[]; // Favorites on deck
+  selectedFavorites: FavoriteTeam[]; // Favorites on deck
   setUser: (id: string, userName: string) => void;
   initializeUser: () => Promise<void>;
   fetchFavorites: (userId: string) => Promise<void>;
   isTeamInFavorites: (teamId: number) => void;
-  addFavoriteToDeck: (teamId: number) => void;
+  addFavoriteToDeck: (teamId: number, teamCode: string) => void;
   removeFavoriteFromDeck: (teamId: number) => void;
   saveFavorites: () => Promise<void>;
   removeFavoriteFromDB: (teamId: number) => Promise<void>;
@@ -44,7 +44,23 @@ const useUserStore = create<UserStore>((set, get) => ({
       );
 
       if (response.status === 200) {
-        const favorites = response.data;
+        const favoritesData = response.data;
+        console.log("STORE", favoritesData);
+        const favorites = favoritesData.map(
+          (fav: {
+            createdAt: Date;
+            id: number;
+            userId: string;
+            teamId: number;
+            team: { code: string };
+          }) => ({
+            createdAt: fav.createdAt,
+            id: fav.id,
+            userId: fav.userId,
+            teamId: fav.teamId,
+            teamCode: fav.team.code,
+          })
+        );
         set({ favorites });
       } else {
         throw new Error("Failed to fetch favorites.");
@@ -59,13 +75,15 @@ const useUserStore = create<UserStore>((set, get) => ({
     const state = get();
     return state.favorites.some((fav) => fav.teamId === teamId);
   },
-  addFavoriteToDeck: (teamId) => {
+  addFavoriteToDeck: (teamId, teamCode) => {
     const { selectedFavorites, favorites } = get();
     const totalFavorites = selectedFavorites.length + favorites.length;
 
     if (totalFavorites < 7) {
       if (!selectedFavorites.some((fav) => fav.teamId === teamId)) {
-        set({ selectedFavorites: [...selectedFavorites, { teamId }] });
+        set({
+          selectedFavorites: [...selectedFavorites, { teamId, teamCode }],
+        });
       }
     } else {
       console.warn("Favorites limit reached!");
@@ -81,7 +99,7 @@ const useUserStore = create<UserStore>((set, get) => ({
   },
   saveFavorites: async () => {
     const { selectedFavorites, favorites } = get();
-
+    console.log("STORE - selected Favs", selectedFavorites);
     try {
       const response = await fetch(`/api/favorites`, {
         method: "POST",
