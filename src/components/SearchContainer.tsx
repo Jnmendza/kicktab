@@ -15,7 +15,6 @@ const SearchContainer = () => {
   const { data: leagues } = useSWR(`/api/leagues`, fetcher);
   const handleSelect = (id: number | null) => {
     setSelectedId(id);
-    console.log("SearchContainer Selected ID:", id);
   };
 
   return (

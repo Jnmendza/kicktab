@@ -15,10 +15,7 @@ const signInWith = async (provider: Provider) => {
     },
   });
 
-  console.log("signInWithOAuth Response:", { data, error });
-
   if (error) {
-    console.log(error);
     throw error;
   }
 

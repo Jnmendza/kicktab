@@ -11,7 +11,6 @@ import { FAVORITES_LIMIT } from "@/lib/constants";
 const FavoritesList = () => {
   const { toast } = useToast();
   const favorites = useUserStore((state) => state.favorites);
-  console.log("Favoirtes in FavoritesList:", favorites);
   const removeFavoriteFromDB = useUserStore(
     (state) => state.removeFavoriteFromDB
   );

@@ -56,12 +56,11 @@ export default function ResetPassword() {
       if (response.error) {
         setServerError(response.message);
       } else {
-        console.log("ddd: ", response);
         // Redirect to the confirmation page
         router.push("/dashboard");
       }
     } catch (error) {
-      console.log("error: ", error);
+      console.error("error: ", error);
       setServerError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false); // Set loading to false when submission ends

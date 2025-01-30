@@ -6,7 +6,6 @@ export async function DELETE(
   { params }: { params: { id: number } }
 ) {
   const favoriteId = params.id;
-  console.log("FAV ID", favoriteId);
   if (!favoriteId) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }

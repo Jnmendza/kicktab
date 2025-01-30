@@ -5,19 +5,19 @@ import useSWR from "swr";
 import { ScrollArea } from "./ui/scroll-area";
 import { fetcher } from "@/lib/utils";
 import Image from "next/image";
-import { Trophy } from "lucide-react";
+import { Loader2, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import useUserStore from "@/store/userStore";
 
-type FavoriteTeam = {
+type FavoriteTeamItem = {
   id: number;
   name: string;
   code: string;
 };
 
 const TeamList = ({ leagueId }: { leagueId: number }) => {
-  const { selectedFavorites, saveFavorites } = useUserStore();
+  const { selectedFavorites, saveFavorites, isSaving } = useUserStore();
   const { toast } = useToast();
 
   const {
@@ -25,6 +25,7 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
     error,
     isLoading,
   } = useSWR(`/api/teams?leagueId=${leagueId}`, fetcher);
+
   const saveFavoritesToDB = async () => {
     try {
       await saveFavorites(); // Call the Zustand store action to save favs
@@ -71,7 +72,7 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
   return (
     <div className='w-full mt-4'>
       <ScrollArea className='h-[31rem] w-full'>
-        {teams.map(({ id, name, code }: FavoriteTeam) => (
+        {teams.map(({ id, name, code }: FavoriteTeamItem) => (
           <TeamListItem key={id} teamId={id} teamCode={code} teamName={name} />
         ))}
       </ScrollArea>
@@ -79,8 +80,9 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
         <Button
           onClick={saveFavoritesToDB}
           className='px-4 py-2 bg-lime text-white rounded-md hover:bg-green-600'
-          disabled={selectedFavorites.length === 0}
+          disabled={selectedFavorites.length === 0 || isSaving}
         >
+          {isSaving && <Loader2 className='animate-spin' />}
           Save Favorites
         </Button>
       </div>

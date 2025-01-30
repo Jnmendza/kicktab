@@ -8,6 +8,7 @@ interface UserStore {
   userName: string | null;
   favorites: FavoriteTeam[]; // Favorites saved in the DB
   loadingState: boolean;
+  isSaving: boolean;
   selectedFavorites: FavoriteTeam[]; // Favorites on deck
   setUser: (id: string, userName: string) => void;
   initializeUser: () => Promise<void>;
@@ -24,6 +25,7 @@ const useUserStore = create<UserStore>((set, get) => ({
   userName: null,
   favorites: [],
   loadingState: true,
+  isSaving: false,
   selectedFavorites: [],
   setUser: (id, userName) => set({ id, userName }),
   initializeUser: async () => {
@@ -79,6 +81,8 @@ const useUserStore = create<UserStore>((set, get) => ({
   saveFavorites: async () => {
     const { selectedFavorites, id } = get();
 
+    set({ isSaving: true });
+
     try {
       const response = await fetch(`/api/favorites`, {
         method: "POST",
@@ -102,11 +106,11 @@ const useUserStore = create<UserStore>((set, get) => ({
       set({
         favorites: refetchedFavorites,
         selectedFavorites: [], // Clear selectedFavorites
+        isSaving: false,
       });
-
-      console.log("Favorites save and refetched successfully!");
     } catch (error) {
       console.error("Error saving favorites:", error);
+      set({ isSaving: false });
     }
   },
   removeFavoriteFromDB: async (favoriteId) => {
@@ -131,7 +135,6 @@ const useUserStore = create<UserStore>((set, get) => ({
 
       // Update the state with the refetched favorites
       set({ favorites: refetchedFavorites });
-      console.log("Favorite removed and refetched successfully");
     } catch (error) {
       console.error("Error removing favorite:", error);
     }

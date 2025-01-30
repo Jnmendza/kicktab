@@ -39,7 +39,9 @@ const FavoritesListItem = ({
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </div>
-      <Badge className='mt-[-3] z-10'>{capitalizeFirstLetter(teamCode)}</Badge>
+      <Badge className='mt-[-3] z-10'>
+        {capitalizeFirstLetter(teamCode) || "Fav"}
+      </Badge>
     </div>
   );
 };

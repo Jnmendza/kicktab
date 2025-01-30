@@ -13,7 +13,6 @@ export async function GET(req: NextRequest) {
 
   try {
     const favorites = await getUsersFavorties(userId);
-    console.log("ENDPOINT favorites", favorites);
     return NextResponse.json(favorites);
   } catch (error) {
     console.error("Error fetching favorites:", error);
@@ -41,7 +40,6 @@ export async function POST(req: NextRequest) {
   }
 
   const userId = authUser.user?.id;
-  console.log("USERID::::::", userId);
   if (!userId || !favorites || !Array.isArray(favorites)) {
     return NextResponse.json(
       { error: "userId and teamId are required" },
@@ -61,7 +59,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-    console.log("Route favs", favorites);
     // Format the favorites data
     const formattedData = favorites.map(
       (fav: { teamId: number; teamCode: string }) => ({

@@ -9,7 +9,6 @@ export async function fetchUserData() {
     data: { user },
     error,
   } = await supabase.auth.getUser();
-  console.log("Supabase getUser response", { user, error });
   if (error) {
     console.error("Error fetching user data:", error);
     return null;
