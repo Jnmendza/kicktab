@@ -1,19 +1,61 @@
-import React, { useState } from "react";
+// import React from "react";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
+import useUserStore from "@/store/userStore";
+import { FAVORITES_LIMIT } from "@/lib/constants";
 
-type ListTeam = {
+interface ListItem {
   teamId: number;
   teamName: string;
-};
+  teamCode: string;
+}
 
-const ListTeamItem = ({ teamId, teamName }: ListTeam) => {
-  const [isFollowed, setIsFollowed] = useState(false);
+const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
+  const {
+    favorites,
+    selectedFavorites,
+    addFavoriteToDeck,
+    removeFavoriteFromDeck,
+  } = useUserStore();
 
+  // Check if the team is already in favorites or selected
+  const isFollowing = favorites.some((fav) => fav.teamId === teamId);
+  const isSelected = selectedFavorites.some((fav) => fav.teamId === teamId);
+
+  // Calculate the total number of favorites (saved + selected)
+  const currentFavsCount = favorites.length;
+  const selectedFavsCount = selectedFavorites.length;
+  const totalFavorites = currentFavsCount + selectedFavsCount;
+  const hasReachedFavsLimit = totalFavorites === FAVORITES_LIMIT;
+
+  // Handle follow/unfollow button click
   const handleFollowClick = () => {
-    setIsFollowed((prev) => !prev); // Toggle follow state
+    if (isSelected) {
+      removeFavoriteFromDeck(teamId);
+    } else {
+      addFavoriteToDeck(teamId, teamCode);
+    }
   };
+
+  // Determine button text and styles
+  const buttonText = isFollowing
+    ? "Following"
+    : isSelected
+      ? "Selected"
+      : "Follow";
+  const buttonStyles = {
+    base: "mr-6 px-4 py-2 rounded",
+    following: "bg-gray-400 text-white cursor-not-allowed",
+    selected: "bg-blue-500 text-white",
+    follow: "bg-green-500 text-white",
+  };
+
+  const buttonVariant = isFollowing
+    ? buttonStyles.follow
+    : isSelected
+      ? buttonStyles.selected
+      : buttonStyles.follow;
 
   return (
     <div className='flex flex-col mb-4'>
@@ -33,13 +75,10 @@ const ListTeamItem = ({ teamId, teamName }: ListTeam) => {
         <Button
           variant='outline'
           onClick={handleFollowClick}
-          className={`mr-6 bg-transparent text-white hover:bg-opacity-20 ${
-            isFollowed
-              ? "bg-green-500 text-black hover:bg-green-600"
-              : "hover:bg-black"
-          }`}
+          disabled={(isFollowing || hasReachedFavsLimit) && !isSelected}
+          className={`${buttonStyles.base} ${buttonVariant}`}
         >
-          {isFollowed ? "Following" : "Follow"}
+          {buttonText}
         </Button>
       </div>
       <Separator className='w-[95%] m-auto' />
@@ -47,4 +86,4 @@ const ListTeamItem = ({ teamId, teamName }: ListTeam) => {
   );
 };
 
-export default ListTeamItem;
+export default TeamListItem;

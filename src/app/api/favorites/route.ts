@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { createClientForServer } from "@/utils/supabase/server";
+import { getUsersFavorties } from "@/app/data/favorites";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -10,10 +12,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const favorites = await db.favorite.findMany({
-      where: { userId },
-      include: { team: true },
-    });
+    const favorites = await getUsersFavorties(userId);
     return NextResponse.json(favorites);
   } catch (error) {
     console.error("Error fetching favorites:", error);
@@ -25,10 +24,23 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = await createClientForServer();
   const body = await req.json();
-  const { userId, teamId } = body;
+  const { favorites } = body;
 
-  if (!userId || !teamId) {
+  // Authenticate the user with Supabase
+  const { data: authUser, error: authError } = await supabase.auth.getUser();
+
+  if (authError || !authUser) {
+    console.error("Authentication Error:", authError);
+    return NextResponse.json(
+      { message: "Unauthorized or failed to get user." },
+      { status: 401 }
+    );
+  }
+
+  const userId = authUser.user?.id;
+  if (!userId || !favorites || !Array.isArray(favorites)) {
     return NextResponse.json(
       { error: "userId and teamId are required" },
       { status: 400 }
@@ -36,36 +48,48 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const favorite = await db.favorite.create({
-      data: { userId, teamId },
+    // Get current favorites count for the user
+    const currentFavorites = await db.favorite.findMany({
+      where: { userId },
     });
-    return NextResponse.json(favorite);
+
+    if (currentFavorites.length + favorites.length > 7) {
+      return NextResponse.json(
+        { error: "You can only have up to 7 favorites." },
+        { status: 400 }
+      );
+    }
+    // Format the favorites data
+    const formattedData = favorites.map(
+      (fav: { teamId: number; teamCode: string }) => ({
+        userId,
+        teamId: fav.teamId,
+        teamCode: fav.teamCode,
+      })
+    );
+
+    //Use createMany for multiple entries
+    await db.favorite.createMany({
+      data: formattedData,
+      skipDuplicates: true, // Avoid duplicate entries
+    });
+
+    //Fetch the newly created favorites to return them in the response
+    const newFavorites = await db.favorite.findMany({
+      where: {
+        userId,
+        teamId: { in: favorites.map((fav: { teamId: number }) => fav.teamId) },
+      },
+    });
+
+    return NextResponse.json({
+      message: "Favorites added successfully",
+      newFavorites,
+    });
   } catch (error) {
     console.error("Error adding favorite:", error);
     return NextResponse.json(
       { error: "Failed to add favorite" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function DELETE(req: NextRequest) {
-  const { searchParams } = new URL(req.url);
-  const favoriteId = searchParams.get("id");
-
-  if (!favoriteId) {
-    return NextResponse.json({ error: "id is required" }, { status: 400 });
-  }
-
-  try {
-    await db.favorite.delete({
-      where: { id: Number(favoriteId) },
-    });
-    return NextResponse.json({ message: "Favorite deleted successfully" });
-  } catch (error) {
-    console.error("Error deleting favorite:", error);
-    return NextResponse.json(
-      { error: "Failed to delete favorite" },
       { status: 500 }
     );
   }

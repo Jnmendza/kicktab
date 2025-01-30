@@ -31,11 +31,9 @@ export const resetPasswordFunc = async ({
   // supabase authentication from here
   const supabase = await createClientForServer();
 
-  const { data, error } = await supabase.auth.updateUser({
+  const { error } = await supabase.auth.updateUser({
     password: password,
   });
-
-  console.log("data : ", data);
 
   if (error) {
     return {

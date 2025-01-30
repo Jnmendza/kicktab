@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "@/components/ClientLayout"; // New client component for dynamic logic
 
+import { ReactQueryProvider } from "@/components/ReactQueryProvider";
+import { Toaster } from "@/components/ui/toaster";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,7 +31,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
       >
-        <ClientLayout>{children}</ClientLayout>
+        <ReactQueryProvider>
+          <ClientLayout>
+            <Toaster />
+            {children}
+          </ClientLayout>
+        </ReactQueryProvider>
       </body>
     </html>
   );

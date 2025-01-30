@@ -11,11 +11,10 @@ import { fetcher } from "@/lib/utils";
 
 const SearchContainer = () => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
+
   const { data: leagues } = useSWR(`/api/leagues`, fetcher);
-  console.log("LEAGUES", leagues);
   const handleSelect = (id: number | null) => {
     setSelectedId(id);
-    console.log("SearchContainer Selected ID:", id);
   };
 
   return (
@@ -28,7 +27,7 @@ const SearchContainer = () => {
       {/* WaterMark and FavoritesList container */}
       <div className='flex-grow flex flex-col items-center justify-center'>
         {selectedId === null ? (
-          <WaterMark />
+          <WaterMark text='Select a league to search for clubs' />
         ) : (
           <TeamList leagueId={selectedId} />
         )}

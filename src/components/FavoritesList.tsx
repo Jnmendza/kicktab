@@ -1,28 +1,39 @@
+"use client";
 import React from "react";
 import { CardHeader } from "./ui/card";
 import { Separator } from "@radix-ui/react-separator";
 import FavoritesListItem from "./FavoritesListItem";
-
-export type FavoriteTeam = {
-  id: number;
-  name: string;
-  code: string;
-};
-
-const favoriteTeams: FavoriteTeam[] = [
-  { id: 39, name: "Wolves", code: "WOL" },
-  { id: 40, name: "Liverpool", code: "LIV" },
-  { id: 41, name: "Southhampton", code: "SOU" },
-  { id: 42, name: "Arsenal", code: "ARS" },
-  { id: 43, name: "Cardiff", code: "CAR" },
-  { id: 44, name: "Burnley", code: "BUR" },
-  { id: 45, name: "Everton", code: "EVE" },
-];
+import useUserStore from "@/store/userStore";
+import { FavoriteTeam } from "@/types/types";
+import { useToast } from "@/hooks/use-toast";
+import { FAVORITES_LIMIT } from "@/lib/constants";
 
 const FavoritesList = () => {
-  const favoritesLimit = 7;
-  const favoritesCount = favoriteTeams.length;
-  const count = `${favoritesCount} / ${favoritesLimit}`;
+  const { toast } = useToast();
+  const favorites = useUserStore((state) => state.favorites);
+  const removeFavoriteFromDB = useUserStore(
+    (state) => state.removeFavoriteFromDB
+  );
+
+  // Favorites count
+  const favoritesCount = favorites.length;
+  const count = `${favoritesCount} / ${FAVORITES_LIMIT}`;
+
+  const handleRemove = async (favoriteId: number) => {
+    try {
+      await removeFavoriteFromDB(favoriteId);
+      toast({
+        title: "Favorite removed! ✅",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to remove favorite. 😢",
+        variant: "destructive",
+      });
+      console.error({ message: "Failure removing favoirte" }, error);
+    }
+  };
+
   return (
     <div className='flex flex-row  items-center bg-transparent text-white'>
       <CardHeader className='flex items-center justify-center'>
@@ -40,9 +51,18 @@ const FavoritesList = () => {
         }}
       />
       <div className='flex overflow-auto'>
-        {favoriteTeams.map(({ id, code }: FavoriteTeam) => (
-          <FavoritesListItem key={id} id={id} code={code} />
-        ))}
+        {favorites.map(
+          ({ id, teamId, teamCode }: FavoriteTeam) =>
+            id !== undefined && (
+              <FavoritesListItem
+                key={id}
+                id={id}
+                teamCode={teamCode}
+                teamId={teamId}
+                handleRemove={() => handleRemove(id)}
+              />
+            )
+        )}
       </div>
     </div>
   );
