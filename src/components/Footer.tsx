@@ -3,6 +3,7 @@ import Image from "next/image";
 import { Instagram, Github, Facebook } from "lucide-react";
 
 const Footer: React.FC = () => {
+  const currentYear = new Date().getFullYear();
   return (
     <footer className='flex flex-col md:flex-row justify-between items-center px-6 md:px-36 py-10 bg-black text-white'>
       <div className='flex flex-col items-center mb-4 md:mb-0'>
@@ -12,7 +13,7 @@ const Footer: React.FC = () => {
           width={230}
           height={220}
         />
-        <p className='mt-2'>© 2025 All Rights Reserved</p>
+        <p className='mt-2'>© {currentYear} All Rights Reserved</p>
       </div>
       <div className='text-center md:text-right'>
         <h1 className='text-2xl font-bold mb-2'>KickTab</h1>

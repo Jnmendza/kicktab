@@ -27,7 +27,7 @@ const SearchContainer = () => {
       {/* WaterMark and FavoritesList container */}
       <div className='flex-grow flex flex-col items-center justify-center'>
         {selectedId === null ? (
-          <WaterMark />
+          <WaterMark text='Select a league to search for clubs' />
         ) : (
           <TeamList leagueId={selectedId} />
         )}

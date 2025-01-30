@@ -4,11 +4,11 @@ import TeamListItem from "./TeamListItem";
 import useSWR from "swr";
 import { ScrollArea } from "./ui/scroll-area";
 import { fetcher } from "@/lib/utils";
-import Image from "next/image";
 import { Loader2, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import useUserStore from "@/store/userStore";
+import WaterMark from "./WaterMark";
 
 type FavoriteTeamItem = {
   id: number;
@@ -20,15 +20,17 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
   const { selectedFavorites, saveFavorites, isSaving } = useUserStore();
   const { toast } = useToast();
 
+  // Fetch teams data using SWR
   const {
     data: teams,
     error,
     isLoading,
   } = useSWR(`/api/teams?leagueId=${leagueId}`, fetcher);
 
+  // Handle saving favorites to the db
   const saveFavoritesToDB = async () => {
     try {
-      await saveFavorites(); // Call the Zustand store action to save favs
+      await saveFavorites();
       toast({
         title: "Favorites saved successfully! 🎉",
         description: "Your selected teams are now saved.",
@@ -43,19 +45,15 @@ const TeamList = ({ leagueId }: { leagueId: number }) => {
     }
   };
 
+  // Show loading spinner while fetching teams
   if (isLoading)
     return (
       <div className='flex flex-col justify-center items-center'>
-        <Image
-          src='/assets/whiteBall.png'
-          alt='ball-logo'
-          width={80}
-          height={80}
-          className='animate-spin'
-        />
-        <p className='text-white text-2xl mt-4'>Loading teams...</p>
+        <WaterMark text='Loading Teams...' spinner />
       </div>
     );
+
+  // Show error message if fetching teams fails
   if (error) return <p>Error loading teams: {error.message}</p>;
 
   // Show the World Cup message for leagueId === 1

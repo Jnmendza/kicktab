@@ -18,13 +18,18 @@ const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
     addFavoriteToDeck,
     removeFavoriteFromDeck,
   } = useUserStore();
+
+  // Check if the team is already in favorites or selected
   const isFollowing = favorites.some((fav) => fav.teamId === teamId);
   const isSelected = selectedFavorites.some((fav) => fav.teamId === teamId);
+
+  // Calculate the total number of favorites (saved + selected)
   const currentFavsCount = favorites.length;
   const selectedFavsCount = selectedFavorites.length;
-  const currentCount = currentFavsCount + selectedFavsCount;
-  const hasReachedFavsLimit = currentCount === FAVORITES_LIMIT;
+  const totalFavorites = currentFavsCount + selectedFavsCount;
+  const hasReachedFavsLimit = totalFavorites === FAVORITES_LIMIT;
 
+  // Handle follow/unfollow button click
   const handleFollowClick = () => {
     if (isSelected) {
       removeFavoriteFromDeck(teamId);
@@ -32,6 +37,25 @@ const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
       addFavoriteToDeck(teamId, teamCode);
     }
   };
+
+  // Determine button text and styles
+  const buttonText = isFollowing
+    ? "Following"
+    : isSelected
+      ? "Selected"
+      : "Follow";
+  const buttonStyles = {
+    base: "mr-6 px-4 py-2 rounded",
+    following: "bg-gray-400 text-white cursor-not-allowed",
+    selected: "bg-blue-500 text-white",
+    follow: "bg-green-500 text-white",
+  };
+
+  const buttonVariant = isFollowing
+    ? buttonStyles.follow
+    : isSelected
+      ? buttonStyles.selected
+      : buttonStyles.follow;
 
   return (
     <div className='flex flex-col mb-4'>
@@ -52,15 +76,9 @@ const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
           variant='outline'
           onClick={handleFollowClick}
           disabled={(isFollowing || hasReachedFavsLimit) && !isSelected}
-          className={`mr-6 px-4 py-2 rounded ${
-            isFollowing
-              ? "bg-gray-400 text-white cursor-not-allowed"
-              : isSelected
-                ? "bg-blue-500 text-white"
-                : "bg-green-500 text-white"
-          }`}
+          className={`${buttonStyles.base} ${buttonVariant}`}
         >
-          {isFollowing ? "Following" : isSelected ? "Selected" : "Follow"}
+          {buttonText}
         </Button>
       </div>
       <Separator className='w-[95%] m-auto' />

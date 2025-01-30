@@ -15,6 +15,7 @@ const FavoritesList = () => {
     (state) => state.removeFavoriteFromDB
   );
 
+  // Favorites count
   const favoritesCount = favorites.length;
   const count = `${favoritesCount} / ${FAVORITES_LIMIT}`;
 

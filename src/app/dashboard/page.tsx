@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import useUserStore from "@/store/userStore";
 import SearchContainer from "@/components/SearchContainer";
 import Image from "next/image";
+import WaterMark from "@/components/WaterMark";
 
 const Dashboard = () => {
   const initializeUser = useUserStore((state) => state.initializeUser);
@@ -21,14 +22,6 @@ const Dashboard = () => {
     initialize();
   }, [initializeUser, fetchFavorites, userId]);
 
-  if (loading) {
-    return (
-      <div className='relative min-h-screen flex items-center justify-center'>
-        <p className='text-white text-2xl'>Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <div className='relative min-h-screen'>
       <Image
@@ -39,7 +32,16 @@ const Dashboard = () => {
         priority
       />
       <div className='relative z-10 flex flex-col items-center justify-center min-h-screen bg-black bg-opacity-50 text-white'>
-        <SearchContainer />
+        {loading ? (
+          <WaterMark
+            height={100}
+            width={100}
+            spinner={true}
+            text='Welcome to your dashboard'
+          />
+        ) : (
+          <SearchContainer />
+        )}
       </div>
     </div>
   );
