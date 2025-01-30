@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
   const favoriteId = params.id;
+  console.log("PARAMS", favoriteId);
   if (!favoriteId) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }

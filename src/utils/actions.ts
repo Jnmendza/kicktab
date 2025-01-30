@@ -15,6 +15,10 @@ const signInWith = async (provider: Provider) => {
     },
   });
 
+  const { data: sessionData, error: sessionError } =
+    await supabase.auth.getSession();
+  console.log("SIGN IN GOOGLE", sessionData, sessionError);
+
   if (error) {
     throw error;
   }

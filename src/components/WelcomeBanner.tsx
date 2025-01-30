@@ -4,7 +4,7 @@ import useUserStore from "@/store/userStore";
 
 export default function WelcomeBanner() {
   const userName = useUserStore((state) => state.userName);
-
+  console.log(userName);
   if (!userName) {
     return <div>Welcome, Guest!</div>;
   }
