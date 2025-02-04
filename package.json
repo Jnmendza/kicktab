@@ -13,15 +13,12 @@
   },
   "jest": {
     "verbose": true,
-    "preset": "ts-jest",
     "testEnvironment": "jsdom",
     "setupFilesAfterEnv": [
       "<rootDir>/src/jest.setup.ts"
     ],
     "transform": {
-      "^.+\\.(ts|tsx|js|jsx)$": [
-        "@swc/jest"
-      ]
+      "^.+\\.(ts|tsx|js|jsx)$": "@swc/jest"
     },
     "moduleFileExtensions": [
       "ts",
@@ -84,6 +81,7 @@
   "devDependencies": {
     "@babel/preset-typescript": "^7.26.0",
     "@eslint/eslintrc": "^3",
+    "@swc/jest": "^0.2.37",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^14.6.1",
@@ -111,6 +109,7 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths-jest": "^0.0.1",
     "typescript": "^5.7.3",
+    "whatwg-fetch": "^3.6.20",
     "zustand": "^5.0.3"
   }
 }
