@@ -24,6 +24,28 @@ describe("User Store", () => {
     expect(state.userName).toBe("Jon");
   });
 
+  test("isTeamInFavorites returns true if team is in favorites", () => {
+    // Arrange: Set the favorites array to include a team with teamId: 1.
+    useUserStore.setState({
+      favorites: [{ teamId: 1, teamCode: "TMA" }],
+    });
+    // Act: Call isTeamFavorites with the teamId.
+    const result = useUserStore.getState().isTeamInFavorites(1);
+    // Assert: It should return true.
+    expect(result).toBe(true);
+  });
+
+  test("isTeamInFavorites returns false if team is not in favorites", () => {
+    // Arrange: Ensure the favorites array does NOT include teamId:
+    useUserStore.setState({
+      favorites: [{ teamId: 1, teamCode: "TMA" }],
+    });
+    // Act: Check for a team that isn't in the favorites.
+    const result = useUserStore.getState().isTeamInFavorites(2);
+    // Assert: It should return false.
+    expect(result).toBe(false);
+  });
+
   test("addFavoriteToDeck adds team if under limit", () => {
     // Call the function to add a team to the selectedFavorites.
     useUserStore.getState().addFavoriteToDeck(1, "TMA");

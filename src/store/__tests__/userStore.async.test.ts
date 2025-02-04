@@ -116,4 +116,51 @@ describe("User Store Async Functions", () => {
     // Cleanup:
     fetchSpy.mockRestore();
   });
+
+  test("removeFavoriteFromDB removes a favorite and refetches favorites", async () => {
+    //Forecefully set id to '123' again to ensure it hasn't been overwritten.
+    useUserStore.setState({ id: "123" });
+
+    // Arrange:
+    // This is the updated favorites array returned by the refetch.
+    const refetchedFavorites: never[] = []; // assume favorite was removed
+
+    // Create a spy on global.fetch to control responses.
+    const fetchSpy = jest.spyOn(
+      global as unknown as { fetch: jest.Mock },
+      "fetch"
+    );
+
+    // First call: DELETE request.
+    // Second call: GET request to refetch favorites.
+    fetchSpy
+      .mockResolvedValueOnce({
+        ok: true,
+        // No json for DELETE response.
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => refetchedFavorites,
+      } as Response);
+
+    // Act: Call removeFavoriteFromDB for a given favoriteId.
+    await useUserStore.getState().removeFavoriteFromDB(1);
+
+    // Assert:
+    const state = useUserStore.getState();
+    // The favorites should now be updated to the refetched (empty)
+    expect(state.favorites).toEqual(refetchedFavorites);
+
+    // Optionally check that fetch was called correctly.
+    // DELETE request:
+    expect(fetchSpy.mock.calls[0][0]).toBe("/api/favorites/1");
+    expect(fetchSpy.mock.calls[0][1]).toMatchObject({
+      method: "DELETE",
+    });
+    // GET request:
+    expect(fetchSpy.mock.calls[1][0]).toBe("/api/favorites?userId=123");
+
+    // Cleanup the fetch spy.
+    fetchSpy.mockRestore();
+  });
 });
