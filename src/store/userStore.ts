@@ -73,7 +73,7 @@ const useUserStore = create<UserStore>((set, get) => ({
         });
       }
     } else {
-      console.warn("Favorites limit reached!");
+      console.warn("Favorites limit reached");
     }
   },
 

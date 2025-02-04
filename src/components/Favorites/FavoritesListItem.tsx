@@ -1,8 +1,8 @@
 import React from "react";
-import { Avatar, AvatarFallback } from "./ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
 import { CircleMinus } from "lucide-react";
-import { Badge } from "./ui/badge";
+import { Badge } from "../ui/badge";
 import { capitalizeFirstLetter } from "@/lib/utils";
 
 interface FavoriteItem {

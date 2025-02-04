@@ -1,14 +1,14 @@
 "use client";
 import React from "react";
-import TeamListItem from "./TeamListItem";
+import TeamListItem from "../Team/TeamListItem";
 import useSWR from "swr";
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "../ui/scroll-area";
 import { fetcher } from "@/lib/utils";
 import { Loader2, Trophy } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import useUserStore from "@/store/userStore";
-import WaterMark from "./WaterMark";
+import WaterMark from "../WaterMark";
 
 type FavoriteTeamItem = {
   id: number;
