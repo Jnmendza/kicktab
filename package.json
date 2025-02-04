@@ -34,7 +34,7 @@
       "\\.(jpg|jpeg|png|gif|webp|svg)$": "<rootDir>/__mocks__/fileMock.js"
     },
     "transformIgnorePatterns": [
-      "node_modules/(?!@testing-library)"
+      "node_modules/(?!(@testing-library|lucide-react)/)"
     ],
     "globals": {
       "ts-jest": {
