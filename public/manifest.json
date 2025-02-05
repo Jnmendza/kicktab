@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "KickTab Chrome Extension",
+  "version": "1.0",
+  "description": "A Chrome extension for tracking football scores.",
+  "action": {
+    "default_popup": "index.html",
+    "default_icon": "favicon.ico"
+  },
+  "permissions": ["storage", "activeTab"],
+  "host_permissions": ["https://api-football.com/*"]
+}
