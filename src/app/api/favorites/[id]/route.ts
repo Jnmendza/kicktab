@@ -3,17 +3,17 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const favoriteId = params.id;
-  console.log("PARAMS", favoriteId);
-  if (!favoriteId) {
+  const { id } = await params;
+  console.log("PARAMS", id);
+  if (!id) {
     return NextResponse.json({ error: "id is required" }, { status: 400 });
   }
 
   try {
     await db.favorite.delete({
-      where: { id: Number(favoriteId) },
+      where: { id: Number(id) },
     });
     return NextResponse.json({ message: "Favorite deleted successfully" });
   } catch (error) {
