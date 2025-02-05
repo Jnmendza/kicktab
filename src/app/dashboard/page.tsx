@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import useUserStore from "@/store/userStore";
-import SearchContainer from "@/components/SearchContainer";
+import SearchContainer from "@/components/Search/SearchContainer";
 import Image from "next/image";
 import WaterMark from "@/components/WaterMark";
 

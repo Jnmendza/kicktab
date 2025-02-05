@@ -1,11 +1,11 @@
 "use client";
-
+import React from "react";
 import { useState } from "react";
 import Search from "./Search";
-import { Card } from "./ui/card";
-import WaterMark from "./WaterMark";
-import FavoritesList from "./FavoritesList";
-import TeamList from "./TeamList";
+import { Card } from "../ui/card";
+import WaterMark from "../WaterMark";
+import FavoritesList from "../Favorites/FavoritesList";
+import TeamList from "../Team/TeamList";
 import useSWR from "swr";
 import { fetcher } from "@/lib/utils";
 

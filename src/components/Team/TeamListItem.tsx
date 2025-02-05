@@ -1,7 +1,7 @@
-// import React from "react";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import { Separator } from "./ui/separator";
-import { Button } from "./ui/button";
+import React from "react";
+import { Avatar, AvatarImage } from "../ui/avatar";
+import { Separator } from "../ui/separator";
+import { Button } from "../ui/button";
 import useUserStore from "@/store/userStore";
 import { FAVORITES_LIMIT } from "@/lib/constants";
 
@@ -11,7 +11,7 @@ interface ListItem {
   teamCode: string;
 }
 
-const TeamListItem = ({ teamId, teamName, teamCode }: ListItem) => {
+const TeamListItem: React.FC<ListItem> = ({ teamId, teamName, teamCode }) => {
   const {
     favorites,
     selectedFavorites,

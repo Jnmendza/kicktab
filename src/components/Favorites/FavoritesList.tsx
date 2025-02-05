@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
-import { CardHeader } from "./ui/card";
+import { CardHeader } from "../ui/card";
 import { Separator } from "@radix-ui/react-separator";
-import FavoritesListItem from "./FavoritesListItem";
+import FavoritesListItem from "../Favorites/FavoritesListItem";
 import useUserStore from "@/store/userStore";
 import { FavoriteTeam } from "@/types/types";
 import { useToast } from "@/hooks/use-toast";
