@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useState } from "react";
 import Search from "./Search";
 import { Card } from "../ui/card";
